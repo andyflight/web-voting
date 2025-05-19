@@ -1,0 +1,418 @@
+/* src/main/webapp/css/styles.css */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --light-color: #ecf0f1;
+    --dark-color: #2c3e50;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --error-color: #e74c3c;
+    --border-radius: 6px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header & Navigation */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 0;
+    box-shadow: var(--box-shadow);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    max-width: 1200px; /* To align with .container */
+    margin: 0 auto; /* To align with .container */
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+nav a.active {
+    background-color: var(--secondary-color);
+    font-weight: bold;
+}
+
+/* User Actions in Header - NEW STYLES */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between username and button, or multiple buttons */
+}
+
+.user-actions .username-display {
+    color: var(--light-color);
+    font-weight: 500;
+    margin-right: 5px; /* Slight space before a button if both are present */
+}
+
+.btn-header-login, .btn-header-logout {
+    padding: 0.375rem 0.75rem; /* Match .btn padding if not using .btn directly */
+    font-size: 0.9rem; /* Slightly smaller for header */
+    line-height: 1.5;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: white;
+    border: 1px solid transparent;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-header-login {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+.btn-header-login:hover {
+    background-color: #27ae60; /* Darker success */
+    border-color: #27ae60;
+}
+
+.btn-header-logout {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+.btn-header-logout:hover {
+    background-color: #c0392b; /* Darker accent */
+    border-color: #c0392b;
+}
+
+
+/* Page titles */
+.page-title {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--light-color);
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    padding: 1rem 1.5rem;
+    background-color: var(--light-color);
+    border-top: 1px solid #e1e5e9;
+    display: flex; /* For better button alignment if multiple buttons */
+    gap: 10px; /* Space between buttons in footer */
+}
+
+/* Voting list */
+.voting-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.voting-item {
+    margin-bottom: 1rem;
+}
+
+.voting-link {
+    display: block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.voting-link:hover {
+    color: var(--secondary-color);
+}
+
+/* Messages */
+.message {
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+.message-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.message-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.message-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: var(--border-radius);
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    text-decoration: none; /* Ensure links styled as buttons don't have underlines */
+}
+
+.btn-primary {
+    color: white;
+    background-color: #348ddb;
+    border-color: #3498DBFF;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-secondary { /* Adding a secondary button style as it's often useful */
+    color: white;
+    background-color: #6c757d; /* A common secondary color */
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+
+/* Forms */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    display: block;
+    width: 100%; /* Default, can be overridden with max-width or specific width */
+    box-sizing: border-box; /* Important for width calculations with padding/border */
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: var(--border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: var(--secondary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Login Page Container - NEW STYLE */
+.login-container {
+    max-width: 450px; /* Increased slightly */
+    margin: 40px auto; /* More top margin */
+    /* padding: 20px; - Handled by card-body */
+    /* background: white; - Handled by card */
+    /* border-radius: var(--border-radius); - Handled by card */
+    /* box-shadow: var(--box-shadow); - Handled by card */
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        padding: 1rem; /* Adjusted padding for smaller screens */
+        gap: 1rem; /* Space between nav and user-actions when stacked */
+    }
+
+    nav {
+        margin-top: 0; /* Removed fixed margin-top as gap handles spacing */
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap; /* Allow nav items to wrap if too many */
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: center; /* Center user actions on small screens */
+    }
+
+    .container {
+        padding: 1rem;
+    }
+}
+
+/* Share Links */
+.share-links {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+}
+
+.input-group {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.input-group .form-control {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Voting Form */
+.voting-form {
+    margin-top: 2rem;
+}
+
+.radio-option {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+/* Results Display */
+.results-list {
+    list-style: none;
+    padding: 0;
+}
+
+.results-list li {
+    padding: 0.75rem 1rem; /* Increased padding for better readability */
+    margin-bottom: 0.75rem; /* Increased margin */
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align items vertically */
+    border-left: 4px solid var(--secondary-color); /* Accent border */
+}
+
+.candidate-name {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.vote-count {
+    font-weight: bold;
+    color: var(--secondary-color);
+    background-color: white; /* Make vote count stand out */
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+/* Results Preview */
+.results-preview {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+}
+
+.status-forms {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px; /* Adds space between buttons */
+}
+.status-forms form {
+    display: inline-block; /* Keep forms on the same line */
+}
+
+.candidate-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.candidate-field input {
+    flex-grow: 1;
+    margin-right: 10px;
+}
