@@ -1,6 +1,5 @@
 package com.example.webvoting.repositories;
 
-import com.example.webvoting.models.Vote;
 import com.example.webvoting.models.Voting;
 
 import java.util.List;

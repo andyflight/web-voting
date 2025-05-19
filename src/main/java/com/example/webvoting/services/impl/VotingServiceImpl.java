@@ -9,8 +9,10 @@ import com.example.webvoting.models.User;
 import com.example.webvoting.models.Vote;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.repositories.VotingRepository;
-import com.example.webvoting.repositories.impl.StubVotingRepository;
+import com.example.webvoting.services.UserService;
 import com.example.webvoting.services.VotingService;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
@@ -19,14 +21,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Stateless
 public class VotingServiceImpl implements VotingService {
 
-    private VotingRepository votingRepository = StubVotingRepository.getInstance();
-    private UserServiceImpl userService = new UserServiceImpl();
+    @EJB
+    private VotingRepository votingRepository;
+
+    @EJB
+    private UserService userService;
 
 
     @Override
     public Voting createVoting(String title, List<String> candidateNames, UUID creatorId) {
+
+        if (title == null || title.isBlank() || candidateNames == null || candidateNames.isEmpty() || creatorId == null) {
+            throw new IllegalArgumentException("Invalid input");
+        }
+
         Voting voting = new Voting();
         voting.setTitle(title);
         voting.setCreator(userService.getUserById(creatorId));
@@ -44,6 +55,9 @@ public class VotingServiceImpl implements VotingService {
 
     @Override
     public List<Voting> getVotingsByCreatorId(UUID creatorId) {
+        if (creatorId == null) {
+            throw new IllegalArgumentException("Creator ID cannot be null");
+        }
         return votingRepository.findByCreatorId(creatorId);
     }
 
@@ -54,21 +68,31 @@ public class VotingServiceImpl implements VotingService {
 
     @Override
     public Voting getVotingById(UUID id) {
-        return votingRepository.findById(id).orElseThrow(() -> new VotingNotFoundException("Voting not found with id " + id.toString()));
+        if (id == null) {
+            throw new IllegalArgumentException("Voting ID cannot be null");
+        }
+        return votingRepository.findById(id).orElseThrow(() -> new VotingNotFoundException("Voting not found with id " + id));
     }
 
     @Override
     public void deleteVoting(UUID id) {
+        if (id == null) {
+            return;
+        }
         votingRepository.delete(id);
     }
 
     @Override
     public boolean hasUserVoted(UUID votingId, UUID userId) {
+        if (votingId == null || userId == null) {
+            throw new IllegalArgumentException("Voting ID and User ID cannot be null");
+        }
         return votingRepository.hasUserVoted(votingId, userId);
     }
 
     @Override
     public void vote(UUID votingId, UUID userId, UUID candidateId) {
+
         Voting voting = getVotingById(votingId);
         if (!voting.getIsActive()) {
             throw new VotingNotActiveException("Voting is not active");
@@ -84,9 +108,13 @@ public class VotingServiceImpl implements VotingService {
                 .filter(c -> c.getId().equals(candidateId))
                 .findFirst()
                 .orElseThrow(() -> new CandidateNotFoundException("Candidate not found"));
+        
+        Vote vote = new Vote(UUID.randomUUID(), user, candidate);
+        if (voting.getVotes() == null) {
+            voting.setVotes(new ArrayList<>());
+        }
 
-
-        voting.getVotes().add(new Vote(UUID.randomUUID(), user, candidate));
+        voting.getVotes().add(vote);
     }
 
     @Override
@@ -113,12 +141,18 @@ public class VotingServiceImpl implements VotingService {
 
     @Override
     public String generateVotingLink(HttpServletRequest request, UUID votingId) {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/votings/" + votingId.toString();
+        if (votingId == null) {
+            throw new IllegalArgumentException("Voting ID cannot be null");
+        }
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/votings/" + votingId;
     }
 
     @Override
     public String generateResultsLink(HttpServletRequest request, UUID votingId) {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/results/" + votingId.toString();
+        if (votingId == null) {
+            throw new IllegalArgumentException("Voting ID cannot be null");
+        }
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/results/" + votingId;
 
     }
 

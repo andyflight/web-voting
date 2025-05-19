@@ -1,7 +1,7 @@
 package com.example.webvoting.servlets.votings;
 
 import com.example.webvoting.services.VotingService;
-import com.example.webvoting.services.impl.VotingServiceImpl;
+import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +15,8 @@ import java.util.UUID;
 
 @WebServlet(name = "CreateVotingServlet", urlPatterns = "/votings/create")
 public class CreateVotingServlet extends HttpServlet {
-    private VotingService votingService = new VotingServiceImpl();
+    @EJB
+    private VotingService votingService;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

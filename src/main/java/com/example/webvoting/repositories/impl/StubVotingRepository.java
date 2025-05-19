@@ -4,16 +4,17 @@ import com.example.webvoting.models.Candidate;
 import com.example.webvoting.models.User;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.repositories.VotingRepository;
+import jakarta.ejb.Singleton;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Singleton
 public class StubVotingRepository implements VotingRepository {
     
-    private static final StubVotingRepository instance = new StubVotingRepository();
     private final Map<UUID, Voting> votings = new HashMap<>();
     
-    private StubVotingRepository() {
+    public StubVotingRepository() {
         User user = new User();
         user.setId(UUID.fromString("d9d42288-e6eb-4d11-8dcd-f919bbeba434"));
         user.setName("John Doe");
@@ -31,11 +32,7 @@ public class StubVotingRepository implements VotingRepository {
         )));
         save(voting);
     }
-    
-    public static VotingRepository getInstance() {
-        return instance;
-    }
-    
+
     @Override
     public List<Voting> findAll() {
         return new ArrayList<>(votings.values());
