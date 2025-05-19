@@ -2,7 +2,8 @@ package com.example.webvoting.servlets.votings;
 
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.services.VotingService;
-import com.example.webvoting.services.impl.VotingServiceImpl;
+import jakarta.ejb.EJB;
+import jakarta.ejb.EJBException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +16,8 @@ import java.util.UUID;
 
 @WebServlet(name = "UserVotingsServlet", urlPatterns = "/votings/my")
 public class UserVotingsServlet extends HttpServlet {
-    private VotingService votingService = new VotingServiceImpl();
+    @EJB
+    private VotingService votingService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -25,7 +27,7 @@ public class UserVotingsServlet extends HttpServlet {
                 List<Voting> votings = votingService.getVotingsByCreatorId(UUID.fromString(userId));
                 request.setAttribute("votings", votings);
                 request.getRequestDispatcher("/WEB-INF/views/userVotings.jsp").forward(request, response);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | EJBException e) {
                 String error = e.getMessage();
                 request.getSession().setAttribute("error", error);
                 response.sendRedirect(request.getContextPath() + "/votings");

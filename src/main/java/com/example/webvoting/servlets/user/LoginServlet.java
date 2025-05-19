@@ -2,7 +2,7 @@ package com.example.webvoting.servlets.user;
 
 import com.example.webvoting.models.User;
 import com.example.webvoting.services.UserService;
-import com.example.webvoting.services.impl.UserServiceImpl;
+import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,7 +14,9 @@ import java.io.IOException;
 
 @WebServlet(name = "LoginServlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
-    private UserService userService = new UserServiceImpl();
+
+    @EJB
+    private UserService userService;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

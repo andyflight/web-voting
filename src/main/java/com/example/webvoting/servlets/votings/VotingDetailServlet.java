@@ -3,7 +3,8 @@ package com.example.webvoting.servlets.votings;
 import com.example.webvoting.exceptions.VotingNotFoundException;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.services.VotingService;
-import com.example.webvoting.services.impl.VotingServiceImpl;
+import jakarta.ejb.EJB;
+import jakarta.ejb.EJBException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +16,8 @@ import java.util.UUID;
 
 @WebServlet(name = "VotingDetailServlet", urlPatterns = {"/votings/*"})
 public class VotingDetailServlet extends HttpServlet {
-    private VotingService votingService = new VotingServiceImpl();
+    @EJB
+    private VotingService votingService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -52,7 +54,7 @@ public class VotingDetailServlet extends HttpServlet {
                 String error = "Invalid voting ID format";
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, error);
             }
-            catch (VotingNotFoundException e) {
+            catch (VotingNotFoundException | EJBException e) {
                 String error = "Voting not found";
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, error);
             }
