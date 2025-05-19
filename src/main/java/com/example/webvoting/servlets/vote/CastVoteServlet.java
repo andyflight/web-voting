@@ -29,13 +29,29 @@ public class CastVoteServlet extends HttpServlet {
         String userId = (String) request.getAttribute("currentUserId");
 
         if (votingId != null && candidateId != null && userId != null) {
-            try{
+            try {
+                System.out.println("Casting vote for votingId: " + votingId + " and candidateId: " + candidateId);
                 votingService.vote(UUID.fromString(votingId), UUID.fromString(userId), UUID.fromString(candidateId));
                 String message = "Vote cast successfully!";
                 request.getSession().setAttribute("message", message);
                 response.sendRedirect(request.getContextPath() + "/votings/" + votingId);
+                System.out.println("Vote cast successfully!");
+            } catch (jakarta.ejb.EJBException e) {
+                // Перевіряємо, чи причиною EJBException є UserHasAlreadyVotedException або VotingNotActiveException
+                Throwable cause = e.getCause();
+                if (cause instanceof UserHasAlreadyVotedException || cause instanceof VotingNotActiveException) {
+                    String error = cause.getMessage();
+                    request.getSession().setAttribute("error", error);
+                    response.sendRedirect(request.getContextPath() + "/votings/" + votingId);
+                } else {
+                    // Якщо це інша причина, обробляємо як загальну помилку
+                    String error = e.getMessage();
+                    System.out.println("Error occurred: " + error);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, error);
+                }
             } catch (VotingNotFoundException | CandidateNotFoundException | IllegalArgumentException e) {
                 String error = e.getMessage();
+                System.out.println("What happened: " + error);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, error);
             } catch (UserHasAlreadyVotedException | VotingNotActiveException e) {
                 String error = e.getMessage();

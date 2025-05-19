@@ -4,6 +4,7 @@ import com.example.webvoting.exceptions.VotingNotFoundException;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.services.VotingService;
 import jakarta.ejb.EJB;
+import jakarta.ejb.EJBException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -41,7 +42,7 @@ public class VotingResultsServlet extends HttpServlet {
                 String error = "Invalid voting ID format";
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, error);
             }
-            catch (VotingNotFoundException e) {
+            catch (VotingNotFoundException | EJBException e) {
                 String error = "Voting not found";
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, error);
             }
