@@ -1,5 +1,6 @@
 package com.example.webvoting.servlets.votings;
 
+import com.example.webvoting.exceptions.VotingDataException;
 import com.example.webvoting.services.VotingService;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
@@ -31,7 +32,7 @@ public class CreateVotingServlet extends HttpServlet {
                 String message = "Voting created successfully!";
                 request.getSession().setAttribute("message", message);
                 response.sendRedirect(request.getContextPath() + "/votings");
-            } catch (IllegalArgumentException | EJBException e) {
+            } catch (IllegalArgumentException | VotingDataException | EJBException e) {
                 String error = e.getMessage();
                 request.getSession().setAttribute("error", error);
                 response.sendRedirect(request.getContextPath() + "/votings/create");

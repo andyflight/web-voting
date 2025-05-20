@@ -3,8 +3,8 @@ package com.example.webvoting.exceptions;
 import jakarta.ejb.ApplicationException;
 
 @ApplicationException(rollback = true)
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
+public class UserAlreadyExistsException extends RuntimeException {
+    public UserAlreadyExistsException(String message) {
         super(message);
     }
 }

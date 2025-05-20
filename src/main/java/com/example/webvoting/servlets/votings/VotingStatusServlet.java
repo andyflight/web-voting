@@ -1,5 +1,6 @@
 package com.example.webvoting.servlets.votings;
 
+import com.example.webvoting.exceptions.VotingDataException;
 import com.example.webvoting.exceptions.VotingNotFoundException;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.services.VotingService;
@@ -41,7 +42,7 @@ public class VotingStatusServlet extends HttpServlet {
                     throw new IllegalArgumentException("Invalid status value");
                 }
                 response.sendRedirect(request.getContextPath() + "/votings/my");
-            } catch (IllegalArgumentException | VotingNotFoundException | EJBException e) {
+            } catch (IllegalArgumentException | VotingDataException | VotingNotFoundException | EJBException e) {
                 String error = e.getMessage();
                 request.getSession().setAttribute("error", error);
                 response.sendRedirect(request.getContextPath() + "/votings");

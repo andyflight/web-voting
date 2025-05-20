@@ -1,9 +1,19 @@
 package com.example.webvoting.models;
 
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
+@Entity
+@Table(name = "candidates")
 public class Candidate {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
+
+    @Column(name = "name", nullable = false)
     private String name;
 
     public Candidate() {

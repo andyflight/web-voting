@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@Singleton
+@Deprecated
 public class StubUserRepository implements UserRepository {
 
     private final Map<UUID, User> users = new HashMap<>();

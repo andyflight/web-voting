@@ -1,8 +1,10 @@
 package com.example.webvoting.servlets.user;
 
+import com.example.webvoting.exceptions.UserAlreadyExistsException;
 import com.example.webvoting.models.User;
 import com.example.webvoting.services.UserService;
 import jakarta.ejb.EJB;
+import jakarta.ejb.EJBException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,11 +25,23 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
 
         if (username != null && !username.trim().isEmpty()) {
-            User user = userService.getUserByName(username).orElse(userService.createUser(username));
-            request.getSession().invalidate();
-            HttpSession session = request.getSession(true);
-            session.setAttribute("userId", user.getId().toString());
-            response.sendRedirect(request.getContextPath() + "/votings");
+            try{
+                User user = userService.getUserByName(username).orElseGet(() -> userService.createUser(username));
+                request.getSession().invalidate();
+                HttpSession session = request.getSession(true);
+                session.setAttribute("userId", user.getId().toString());
+                response.sendRedirect(request.getContextPath() + "/votings");
+            } catch (EJBException e) {
+                Throwable cause = e.getCause();
+                String error = cause.getMessage();
+                request.getSession().setAttribute("error", error);
+                response.sendRedirect(request.getContextPath() + "/login");
+            }
+            catch (IllegalArgumentException | UserAlreadyExistsException e) {
+                String error = e.getMessage();
+                request.getSession().setAttribute("error", error);
+                response.sendRedirect(request.getContextPath() + "/login");
+            }
         } else {
             String error = "Invalid username. Please try again.";
             request.getSession().setAttribute("error", error);

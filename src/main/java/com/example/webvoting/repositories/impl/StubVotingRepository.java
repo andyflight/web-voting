@@ -9,7 +9,7 @@ import jakarta.ejb.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Singleton
+@Deprecated
 public class StubVotingRepository implements VotingRepository {
     
     private final Map<UUID, Voting> votings = new HashMap<>();

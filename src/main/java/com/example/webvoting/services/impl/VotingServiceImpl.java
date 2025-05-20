@@ -1,9 +1,6 @@
 package com.example.webvoting.services.impl;
 
-import com.example.webvoting.exceptions.CandidateNotFoundException;
-import com.example.webvoting.exceptions.UserHasAlreadyVotedException;
-import com.example.webvoting.exceptions.VotingNotActiveException;
-import com.example.webvoting.exceptions.VotingNotFoundException;
+import com.example.webvoting.exceptions.*;
 import com.example.webvoting.models.Candidate;
 import com.example.webvoting.models.User;
 import com.example.webvoting.models.Vote;
@@ -13,7 +10,11 @@ import com.example.webvoting.services.UserService;
 import com.example.webvoting.services.VotingService;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.event.spi.PersistContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class VotingServiceImpl implements VotingService {
     @EJB
     private UserService userService;
 
-
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public Voting createVoting(String title, List<String> candidateNames, UUID creatorId) {
 
@@ -38,21 +39,26 @@ public class VotingServiceImpl implements VotingService {
             throw new IllegalArgumentException("Invalid input");
         }
 
-        Voting voting = new Voting();
-        voting.setTitle(title);
-        voting.setCreator(userService.getUserById(creatorId));
-        voting.setVotes(new ArrayList<>());
-        voting.setIsActive(true);
-        voting.setCandidates(candidateNames.stream().map(name -> {
-            Candidate candidate = new Candidate();
-            candidate.setId(UUID.randomUUID());
-            candidate.setName(name);
-            return candidate;
-        }).collect(Collectors.toList()));
+        try {
+            Voting voting = new Voting();
+            voting.setTitle(title);
+            voting.setCreator(userService.getUserById(creatorId));
+            voting.setVotes(new ArrayList<>());
+            voting.setIsActive(true);
+            voting.setCandidates(candidateNames.stream().map(name -> {
+                Candidate candidate = new Candidate();
+                candidate.setName(name);
+                return candidate;
+            }).collect(Collectors.toList()));
 
-        return votingRepository.save(voting);
+
+            return votingRepository.save(voting);
+        } catch (PersistenceException e) {
+            throw new VotingDataException(e.getMessage());
+        }
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public List<Voting> getVotingsByCreatorId(UUID creatorId) {
         if (creatorId == null) {
@@ -61,11 +67,13 @@ public class VotingServiceImpl implements VotingService {
         return votingRepository.findByCreatorId(creatorId);
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public List<Voting> getAllVotings() {
         return votingRepository.findAll();
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public Voting getVotingById(UUID id) {
         if (id == null) {
@@ -74,6 +82,7 @@ public class VotingServiceImpl implements VotingService {
         return votingRepository.findById(id).orElseThrow(() -> new VotingNotFoundException("Voting not found with id " + id));
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public void deleteVoting(UUID id) {
         if (id == null) {
@@ -82,14 +91,20 @@ public class VotingServiceImpl implements VotingService {
         votingRepository.delete(id);
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public boolean hasUserVoted(UUID votingId, UUID userId) {
         if (votingId == null || userId == null) {
             throw new IllegalArgumentException("Voting ID and User ID cannot be null");
         }
-        return votingRepository.hasUserVoted(votingId, userId);
+        try {
+            return votingRepository.hasUserVoted(votingId, userId);
+        } catch (PersistenceException e) {
+            throw new VotingDataException(e.getMessage());
+        }
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public void vote(UUID votingId, UUID userId, UUID candidateId) {
 
@@ -102,35 +117,42 @@ public class VotingServiceImpl implements VotingService {
             throw new UserHasAlreadyVotedException("User has already voted");
         }
 
-        User user = userService.getUserById(userId);
+        try {
+            User user = userService.getUserById(userId);
 
-        Candidate candidate = voting.getCandidates().stream()
-                .filter(c -> c.getId().equals(candidateId))
-                .findFirst()
-                .orElseThrow(() -> new CandidateNotFoundException("Candidate not found"));
-        
-        Vote vote = new Vote(UUID.randomUUID(), user, candidate);
-        if (voting.getVotes() == null) {
-            voting.setVotes(new ArrayList<>());
+            Candidate candidate = voting.getCandidates().stream()
+                    .filter(c -> c.getId().equals(candidateId))
+                    .findFirst()
+                    .orElseThrow(() -> new CandidateNotFoundException("Candidate not found"));
+
+            Vote vote = new Vote();
+            vote.setCandidate(candidate);
+            vote.setUser(user);
+            if (voting.getVotes() == null) {
+                voting.setVotes(new ArrayList<>());
+            }
+
+            voting.getVotes().add(vote);
+        } catch (PersistenceException e) {
+            throw new VotingDataException(e.getMessage());
         }
-
-        voting.getVotes().add(vote);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public void startVoting(UUID votingId) {
         Voting voting = getVotingById(votingId);
         voting.setIsActive(true);
-        votingRepository.save(voting);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public void stopVoting(UUID votingId) {
         Voting voting = getVotingById(votingId);
         voting.setIsActive(false);
-        votingRepository.save(voting);
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public Map<String, Integer> getVotes(UUID votingId) {
         Voting voting = getVotingById(votingId);
@@ -139,6 +161,7 @@ public class VotingServiceImpl implements VotingService {
                 .collect(Collectors.groupingBy(vote -> vote.getCandidate().getName(), Collectors.summingInt(vote -> 1)));
     }
 
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     @Override
     public String generateVotingLink(HttpServletRequest request, UUID votingId) {
         if (votingId == null) {
@@ -147,6 +170,7 @@ public class VotingServiceImpl implements VotingService {
         return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/votings/" + votingId;
     }
 
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     @Override
     public String generateResultsLink(HttpServletRequest request, UUID votingId) {
         if (votingId == null) {

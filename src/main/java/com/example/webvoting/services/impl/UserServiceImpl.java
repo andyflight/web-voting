@@ -1,11 +1,15 @@
 package com.example.webvoting.services.impl;
 
+import com.example.webvoting.exceptions.UserAlreadyExistsException;
 import com.example.webvoting.exceptions.UserNotFoundException;
 import com.example.webvoting.models.User;
 import com.example.webvoting.repositories.UserRepository;
 import com.example.webvoting.services.UserService;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.persistence.PersistenceException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +20,7 @@ public class UserServiceImpl implements UserService {
     @EJB
     private UserRepository userRepository;
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public User getUserById(UUID id) {
         if (id == null) {
@@ -24,6 +29,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
     public Optional<User> getUserByName(String name) {
         if (name == null) {
@@ -32,6 +38,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByName(name);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public User createUser(String name) {
         if (name == null || name.isEmpty()) {
@@ -39,7 +46,11 @@ public class UserServiceImpl implements UserService {
         }
         User user = new User();
         user.setName(name);
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (PersistenceException e) {
+            throw new UserAlreadyExistsException("User with name " + name + " already exists");
+        }
     }
 
 }
