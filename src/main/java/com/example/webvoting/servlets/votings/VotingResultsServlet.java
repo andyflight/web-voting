@@ -1,5 +1,6 @@
 package com.example.webvoting.servlets.votings;
 
+import com.example.webvoting.exceptions.VotingDataException;
 import com.example.webvoting.exceptions.VotingNotFoundException;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.services.VotingService;
@@ -45,6 +46,9 @@ public class VotingResultsServlet extends HttpServlet {
             catch (VotingNotFoundException | EJBException e) {
                 String error = "Voting not found";
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, error);
+            }
+            catch (VotingDataException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             }
         }
     }

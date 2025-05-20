@@ -1,14 +1,39 @@
 package com.example.webvoting.models;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Table(name = "votings")
 public class Voting {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "voting_id")
     private List<Vote> votes;
+
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "voting_id")
     private List<Candidate> candidates;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
     public Voting(){

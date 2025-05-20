@@ -1,5 +1,6 @@
 package com.example.webvoting.servlets.votings;
 
+import com.example.webvoting.exceptions.VotingDataException;
 import com.example.webvoting.models.Voting;
 import com.example.webvoting.services.VotingService;
 import jakarta.ejb.EJB;
@@ -27,7 +28,7 @@ public class UserVotingsServlet extends HttpServlet {
                 List<Voting> votings = votingService.getVotingsByCreatorId(UUID.fromString(userId));
                 request.setAttribute("votings", votings);
                 request.getRequestDispatcher("/WEB-INF/views/userVotings.jsp").forward(request, response);
-            } catch (IllegalArgumentException | EJBException e) {
+            } catch (IllegalArgumentException | VotingDataException | EJBException e) {
                 String error = e.getMessage();
                 request.getSession().setAttribute("error", error);
                 response.sendRedirect(request.getContextPath() + "/votings");
