@@ -43,13 +43,11 @@ public class DBInitializer {
     @Transactional
     private void initializeTestData() {
         try {
-            // Створюємо тестових користувачів
             User admin = userService.createUser("admin");
             User user1 = userService.createUser("user1");
             User user2 = userService.createUser("user2");
             User user3 = userService.createUser("user3");
             
-            // Створюємо тестові голосування
             Voting presidentialVoting = votingService.createVoting(
                     "Presidential Election 2024",
                     Arrays.asList("John Smith", "Sarah Johnson", "Michael Brown"),
@@ -68,24 +66,19 @@ public class DBInitializer {
                     admin.getId()
             );
             
-            // Додаємо голоси
-            // Для президентських виборів
             vote(presidentialVoting.getId(), user1.getId(), presidentialVoting.getCandidates().get(0).getId()); // User1 голосує за John Smith
             vote(presidentialVoting.getId(), user2.getId(), presidentialVoting.getCandidates().get(1).getId()); // User2 голосує за Sarah Johnson
             vote(presidentialVoting.getId(), user3.getId(), presidentialVoting.getCandidates().get(1).getId()); // User3 голосує за Sarah Johnson
             
-            // Для голосування за кращий фільм
             vote(bestMovieVoting.getId(), admin.getId(), bestMovieVoting.getCandidates().get(0).getId()); // Admin голосує за Oppenheimer
             vote(bestMovieVoting.getId(), user2.getId(), bestMovieVoting.getCandidates().get(1).getId()); // User2 голосує за Barbie
             vote(bestMovieVoting.getId(), user3.getId(), bestMovieVoting.getCandidates().get(0).getId()); // User3 голосує за Oppenheimer
             
-            // Зупиняємо одне з голосувань
             votingService.stopVoting(bestMovieVoting.getId());
             
             System.out.println("Test data has been successfully initialized!");
         } catch (Exception e) {
             System.err.println("Error initializing test data: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     
