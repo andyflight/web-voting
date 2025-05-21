@@ -8,13 +8,13 @@ import com.example.webvoting.models.Voting;
 import com.example.webvoting.repositories.VotingRepository;
 import com.example.webvoting.services.UserService;
 import com.example.webvoting.services.VotingService;
+import jakarta.annotation.Nullable;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.hibernate.event.spi.PersistContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +71,24 @@ public class VotingServiceImpl implements VotingService {
     @Override
     public List<Voting> getAllVotings() {
         return votingRepository.findAll();
+    }
+
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    @Override
+    public List<Voting> getAllVotings(Integer page, Integer size, @Nullable Boolean isActive){
+        if (page == null || size == null){
+            throw new IllegalArgumentException("Offset and size cannot be null");
+        }
+        Integer offset = (page-1)*size;
+        if (offset < 0){
+            throw new IllegalArgumentException("Offset cannot be less than 0");
+        }
+
+        try {
+            return votingRepository.findAll(offset, size, isActive);
+        } catch (PersistenceException e) {
+            throw new VotingDataException(e.getMessage());
+        }
     }
 
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)

@@ -4,7 +4,6 @@ import com.example.webvoting.models.User;
 import com.example.webvoting.repositories.UserRepository;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 

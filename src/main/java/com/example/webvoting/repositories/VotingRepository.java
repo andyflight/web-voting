@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface VotingRepository {
     List<Voting> findAll();
+    List<Voting> findAll(Integer offset, Integer size, Boolean isActive);
     List<Voting> findByCreatorId(UUID creatorId);
     Optional<Voting> findById(UUID id);
     Voting save(Voting voting);

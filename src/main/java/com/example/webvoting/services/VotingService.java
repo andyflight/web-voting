@@ -11,6 +11,7 @@ public interface VotingService {
     Voting createVoting(String title, List<String> candidateNames, UUID creatorId);
     List<Voting> getVotingsByCreatorId(UUID creatorId);
     List<Voting> getAllVotings();
+    List<Voting> getAllVotings(Integer page, Integer size, Boolean isActive);
     Voting getVotingById(UUID id);
     void deleteVoting(UUID id);
     boolean hasUserVoted(UUID votingId, UUID userId);

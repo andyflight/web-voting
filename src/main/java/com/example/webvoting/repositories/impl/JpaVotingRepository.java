@@ -32,6 +32,32 @@ public class JpaVotingRepository implements VotingRepository {
     }
 
     @Override
+    public List<Voting> findAll(Integer offset, Integer size, Boolean isActive){
+        try{
+            StringBuilder jpql = new StringBuilder("SELECT v FROM Voting v");
+
+            if (isActive != null) {
+                jpql.append(" WHERE v.isActive = :isActive");
+            }
+
+            jpql.append(" ORDER BY v.id");
+
+            TypedQuery<Voting> query = em.createQuery(jpql.toString(), Voting.class);
+
+            if (isActive != null) {
+                query.setParameter("isActive", isActive);
+            }
+
+            query.setFirstResult(offset);
+            query.setMaxResults(size);
+
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
     public List<Voting> findByCreatorId(UUID creatorId) {
         if (creatorId == null) {
             return Collections.emptyList();
